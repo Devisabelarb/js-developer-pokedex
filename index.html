@@ -1,43 +1,346 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
 
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokedex</title>
-
-    <!-- Normalize CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
-        integrity="sha512-NhSC1YmyruXifcj/KFRWoC561YpHpc5Jtzgvbuzx5VozKpWvQ+4nXhPdFgmx8xqexRcpAglTj9sIBWINXa8x5w=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-    <!-- Font Roboto -->
+    <title>Pokedex DIO</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* RESET CSS BÁSICO */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
 
-    <!-- Nosso CSS -->
-    <link rel="stylesheet" href="/assets/css/global.css">
-    <link rel="stylesheet" href="/assets/css/pokedex.css">
+        body {
+            background-color: #2c3e50;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .content {
+            width: 100%;
+            max-width: 992px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .content h1 {
+            color: #ecf0f1;
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        /* ESTILIZAÇÃO DA LISTA DE POKEMONS */
+        .pokemons {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        .pokemons li {
+            background-color: #4CAF50;
+            padding: 15px;
+            border-radius: 8px;
+            color: #fff;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .pokemons li:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .pokemons li .name {
+            font-size: 1.2em;
+            font-weight: 500;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+        
+        .pokemons li .number {
+            font-size: 0.8em;
+            opacity: 0.7;
+        }
+
+        .pokemons li img {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            margin-bottom: 5px;
+            filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+        }
+
+        /* ESTILOS POR TIPO */
+        .pokemons li.grass { background-color: #74CB48; }
+        .pokemons li.fire { background-color: #F57D31; }
+        .pokemons li.water { background-color: #6493EB; }
+        .pokemons li.bug { background-color: #A7B723; }
+        
+        /* ---------------------------------------------------- */
+        /* ESTILOS DO MODAL DE DETALHES (PÁGINA INICIAL) */
+        /* ---------------------------------------------------- */
+        .modal {
+            display: none; /* Esconde o modal por padrão */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8); /* Fundo semi-transparente */
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #2c3e50;
+            margin: 5% auto; /* 5% do topo e centralizado horizontalmente */
+            padding: 30px;
+            border: 1px solid #4CAF50;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 12px;
+            color: #ecf0f1;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .modal-content h2 {
+            color: #3498db;
+            font-size: 1.8em;
+        }
+
+        .close-btn {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .detail-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #34495e;
+            border-radius: 6px;
+        }
+
+        .detail-item strong {
+            color: #ffd700;
+        }
+        
+        .attacks-list, .competencies-list {
+            list-style: disc inside;
+            margin-left: 20px;
+        }
+        
+        .description-text {
+            font-style: italic;
+            margin-bottom: 20px;
+            padding: 10px;
+            border-left: 4px solid #F57D31; /* Cor Fire para destaque */
+            background-color: #34495e;
+            border-radius: 0 6px 6px 0;
+        }
+
+
+        /* Animação para o modal */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
-
 <body>
+
     <section class="content">
-        <h1>Pokedex</h1>
+        <h1>Pokedex DIO</h1>
 
         <ol id="pokemonList" class="pokemons">
-            <!-- ..... Pokemons here ..... -->
+            <!-- Os itens serão inseridos aqui pelo JavaScript -->
         </ol>
 
-        <div class="pagination">
-            <button id="loadMoreButton" type="button">
-                Load More
-            </button>
-        </div>
     </section>
 
-    <!-- Nosso JS -->
+    <!-- MODAL DE DETALHES (A "PÁGINA INICIAL" DE ATAQUES E COMPETÊNCIAS) -->
+    <div id="pokemonDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="detailName"></h2>
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+            </div>
+            
+            <div id="detailContent">
+                <!-- Conteúdo (ataques/status/competências) será inserido pelo JavaScript -->
+            </div>
+        </div>
+    </div>
+    <!------------------------------------------------------>
+
+    <script>
+        // Dados de Pokémon com informações de ataques, estatísticas, competências e DESCRIÇÃO
+        const POKEMONS_DATA = [
+            { id: 1, name: 'Bulbasaur', number: 1, image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/1.svg', type: 'grass', 
+              attacks: ['Chicote de Vinha', 'Folha Navalha'], stats: { hp: 45, atk: 49, def: 49 }, 
+              competencies: ['Semente Crescimento', 'Absorção de Água'],
+              description: 'Um Pokémon tipo Planta/Veneno. Ele usa as sementes em suas costas para absorver luz solar e crescer.' },
+            
+            { id: 4, name: 'Charmander', number: 4, image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/4.svg', type: 'fire',
+              attacks: ['Brasa', 'Lança-Chamas'], stats: { hp: 39, atk: 52, def: 43 },
+              competencies: ['Poder de Fogo', 'Garras Afiadas'],
+              description: 'Pokémon tipo Fogo. A chama em sua cauda indica a força de sua vida. Se ela se apagar, ele morrerá.' },
+              
+            { id: 7, name: 'Squirtle', number: 7, image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/7.svg', type: 'water',
+              attacks: ['Jato de Água', 'Bomba d\'Água'], stats: { hp: 44, atk: 48, def: 65 },
+              competencies: ['Armadura', 'Jato Furtivo'],
+              description: 'Um Pokémon tipo Água. Sua concha é usada para proteção e aerodinâmica ao nadar.' },
+              
+            { id: 10, name: 'Caterpie', number: 10, image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/10.svg', type: 'bug',
+              attacks: ['Investida', 'Fio de Seda'], stats: { hp: 45, atk: 30, def: 35 },
+              competencies: ['Seda Pegajosa', 'Metamorfose'],
+              description: 'Pokémon Lagarta. Ele usa suas antenas para liberar um odor terrível para afastar predadores.' },
+              
+            { id: 25, name: 'Pikachu', number: 25, image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/25.svg', type: 'electric',
+              attacks: ['Choque do Trovão', 'Ataque Rápido'], stats: { hp: 35, atk: 55, def: 40 },
+              competencies: ['Eletricidade Estática', 'Aceleração'],
+              description: 'Pokémon Rato Elétrico. Ele armazena eletricidade em suas bochechas e solta descargas elétricas em batalha.' },
+        ];
+
+        const listElement = document.getElementById('pokemonList');
+        const modalElement = document.getElementById('pokemonDetailModal');
+        const detailContent = document.getElementById('detailContent');
+        const detailName = document.getElementById('detailName');
+
+
+        // Função para converter dados do Pokémon em HTML para a lista
+        function convertPokemonToHtml(pokemon) {
+            // Adiciona o evento onClick chamando showPokemonDetails e passando o ID
+            return `
+                <li class="pokemon ${pokemon.type}" onclick="showPokemonDetails(${pokemon.id})">
+                    <span class="number">#${pokemon.number.toString().padStart(3, '0')}</span>
+                    <span class="name">${pokemon.name}</span>
+
+                    <div class="detail">
+                        <img src="${pokemon.image}" 
+                            alt="${pokemon.name}"
+                            onerror="this.onerror=null; this.src='https://placehold.co/90x90/555555/FFFFFF?text=?'">
+                        <ol class="types">
+                            <li class="type">${pokemon.type.toUpperCase()}</li> 
+                        </ol>
+                    </div>
+                </li>
+            `;
+        }
+        
+        // FUNÇÃO PARA EXIBIR OS DETALHES NO MODAL
+        function showPokemonDetails(pokemonId) {
+            // Encontra o Pokémon nos dados pelo ID
+            const pokemon = POKEMONS_DATA.find(p => p.id === pokemonId);
+            
+            if (!pokemon) return;
+
+            // Gera a lista de ataques em HTML
+            const attacksHtml = pokemon.attacks.map(attack => `<li>${attack}</li>`).join('');
+            
+            // Gera a lista de competências em HTML
+            const competenciesHtml = pokemon.competencies.map(comp => `<li>${comp}</li>`).join('');
+            
+            // Define o conteúdo do modal
+            detailName.textContent = pokemon.name;
+            detailContent.innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img src="${pokemon.image}" alt="${pokemon.name}" style="width: 150px; height: 150px; background-color: #444; border-radius: 50%;">
+                </div>
+                
+                <!-- NOVO: DESCRIÇÃO DO POKÉMON -->
+                <p class="description-text">${pokemon.description}</p>
+                
+                <hr style="margin: 15px 0; border-color: #34495e;">
+
+                <h3>Ataques Principais:</h3>
+                <ul class="attacks-list">
+                    ${attacksHtml}
+                </ul>
+                
+                <hr style="margin: 15px 0; border-color: #34495e;">
+                
+                <h3>Competências (Habilidades):</h3>
+                <ul class="competencies-list">
+                    ${competenciesHtml}
+                </ul>
+
+                <hr style="margin: 15px 0; border-color: #34495e;">
+
+                <h3>Estatísticas (Base Stats):</h3>
+                <div class="detail-item">
+                    <strong>HP (Vida):</strong> ${pokemon.stats.hp}<br>
+                    <strong>ATK (Ataque):</strong> ${pokemon.stats.atk}<br>
+                    <strong>DEF (Defesa):</strong> ${pokemon.stats.def}
+                </div>
+                <p>Tipo: <span style="background-color: var(--color-${pokemon.type}); padding: 3px 8px; border-radius: 4px; color: #fff;">${pokemon.type.toUpperCase()}</span></p>
+            `;
+
+            // Exibe o modal
+            modalElement.style.display = "block";
+        }
+
+        // FUNÇÃO PARA FECHAR O MODAL
+        function closeModal() {
+            modalElement.style.display = "none";
+        }
+
+        // Fecha o modal ao clicar fora dele
+        window.onclick = function(event) {
+            if (event.target == modalElement) {
+                closeModal();
+            }
+        }
+
+        // Função para carregar e renderizar a lista
+        function loadPokemonItems() {
+            const newHtml = POKEMONS_DATA.map(convertPokemonToHtml).join('');
+            listElement.innerHTML = newHtml;
+            
+            // Simula a abertura do modal do Charmander (ID 4)
+            showPokemonDetails(4); 
+        }
+
+        // Inicia a renderização
+        loadPokemonItems();
+    </script>
+    
+    <!-- Arquivos JS originais (não editados aqui) -->
     <script src="/assets/js/pokemon-model.js"></script>
     <script src="/assets/js/poke-api.js"></script>
     <script src="/assets/js/main.js"></script>
